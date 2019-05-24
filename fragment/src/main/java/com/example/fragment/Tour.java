@@ -1,23 +1,20 @@
 package com.example.fragment;
+
+import android.graphics.Bitmap;
+
 // 관광지 정보 객체
 public class Tour {
 
-    String image_url;
+    Bitmap bitmap;
     String name;
     String address;
 
-    public Tour(String image_url, String name, String address) {
-        this.image_url = image_url;
-        this.name = name;
-        this.address = address;
+    public Bitmap getBitmap() {
+        return bitmap;
     }
 
-    public String getImage_url() {
-        return image_url;
-    }
-
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
 
     public String getName() {

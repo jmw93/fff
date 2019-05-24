@@ -1,5 +1,7 @@
 package com.example.fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -7,6 +9,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -39,40 +42,46 @@ public class XMLPullParserHandler {
                         String startTag = xpp.getName();
                         Log.d("minwoo",startTag);
                         if(startTag.equals("item")){
-                            buffer.append(startTag+"{");
-                            buffer.append("\n");
+                        Tour tour = new Tour();
+
                         }
 
-                        if(startTag.equals("title")){
-                            xpp.next();
-                            buffer.append(startTag+":"+xpp.getText());
-                            buffer.append("\n");
-                        }
                         if(startTag.equals("addr1")){
                             xpp.next();
-                            buffer.append(startTag+":"+xpp.getText());
-                            buffer.append("\n");
+                            tour.setAddress(xpp.getText());
+
                         }
-                        if(startTag.equals("firstimage")){
+                        if(startTag.equals("name")){
                             xpp.next();
-                            buffer.append(startTag+":"+xpp.getText());
-                            buffer.append("\n");
+                         tour.setName(xpp.getText());
                         }
+//                        if(startTag.equals("firstimage")){
+//                            xpp.next();
+//                            try {
+//                                HttpURLConnection conn = (HttpURLConnection) new URL(xpp.getText()).openConnection(); //이부분에서 비트맵객체로 바꿔서 객체에저장하기
+//                                conn.setDoInput(true);
+//                                conn.connect();
+//
+//                                InputStream stream = conn.getInputStream();
+//                                Bitmap bitmap = BitmapFactory.decodeStream(stream);
+//                            }catch(Exception e) {
+//                                Log.d("jmw93","이미지스레드오류났음");
+//                            }
+//                            }
 
 
-                        break;
+                       break;
 
                     case XmlPullParser.END_TAG:
                         String endTag =xpp.getName();
                         if(endTag.equals("item")){
-                            buffer.append("}");
-                            buffer.append("\n");
+                            tourlist.add(tour);
 
                         }
                         break;
 
                 }//switch문의 끝
-                eventType = parser.next();
+                eventType = xpp.next();
             }//for문 끝
 
         } //try문의 끝
