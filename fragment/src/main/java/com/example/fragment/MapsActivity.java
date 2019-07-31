@@ -1,13 +1,17 @@
 package com.example.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,108 +30,66 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import javax.mail.MessagingException;
 import javax.mail.SendFailedException;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity {
 
-    private GoogleMap mMap;
-    private FusedLocationProviderClient mFusedLocationClient;
-    private final int requstCode = 1000;
+
+
     TextView textView;
-    private LocationCallback mLocationCallback;
-
-//    @Override
-//    public View onCreateView(String name, Context context, AttributeSet attrs) {
-//      LinearLayout mapmail = (LinearLayout)findViewById(R.id.mapmail);
-//      return mapmail;
-//    }
+    String emailAddr;
+    String emailPassword;
+    String recipient;
+    LocationRequest request;
+    EditText edit_Id;
+    EditText edit_password;
+    EditText edit_recipient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        edit_Id =findViewById(R.id.edit_Id);
+        edit_password =findViewById(R.id.edit_Password);
+        edit_recipient =findViewById(R.id.edit_recipient);
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .permitDiskReads()
                 .permitDiskWrites()
                 .permitNetwork().build());
 
-        Button button2 = findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
+        Button btn_stop = findViewById(R.id.btn_stop);
+        Button btn_send = findViewById(R.id.btn_send);
+        btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopLocationUpdates();
+                onstartService();
             }
         });
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager() .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mLocationCallback = new LocationCallback() {
-             @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if(locationResult !=null) {
-                    for(final Location location : locationResult.getLocations()) {
-                            final double Latitude =location.getLatitude();
-                            final double Longitude=location.getLongitude();
-                            LatLng currentLocation =new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation,15.0f));
-                        new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-
-                                                GMailSender gMailSender = new GMailSender("sae1013@gmail.com", "sae563365");
-
-                                                //GMailSender.sendMail(제목, 본문내용, 받는사람);
-
-                                                gMailSender.sendMail("현재위치테스트", "위도:"+Latitude+"경도:"+Longitude ,"jmw93@naver.com");
-
-
-
-                                } catch (SendFailedException e) {
-
-                                    e.printStackTrace();
-
-                                } catch (MessagingException e) {
-
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-
-                                    e.printStackTrace();
-
-                                }
-                            }
-                        }).start();
-
-
-                    }
-                }
+        btn_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onstopService();
             }
-        };
+        });
 
 
     }
 
+    private void onstartService() {
+        emailAddr = edit_Id.getText().toString();
+        emailPassword = edit_password.getText().toString();
+        recipient = edit_recipient.getText().toString();
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        Intent intent= new Intent(this,MyService.class);
+        intent.putExtra("emailAddr",emailAddr);
+        intent.putExtra("emailPassword",emailPassword);
+        intent.putExtra("recipient",recipient);
 
-        LocationRequest request = new LocationRequest();
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        request.setInterval(10000);
-        request.setFastestInterval(5000);
-
-        mFusedLocationClient.requestLocationUpdates(
-                request,
-                mLocationCallback,
-                null);
-
-
-
+        startService(intent);
     }
 
-    private void stopLocationUpdates() {
-        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    private void onstopService() {
+        Intent intent= new Intent(this,MyService.class);
+        stopService(intent);
     }
 
 }

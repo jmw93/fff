@@ -1,11 +1,15 @@
 package com.example.fragment;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,104 +23,74 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class tour_fragment extends Fragment {
-    List tourlist = new ArrayList<Tour>();
-    XMLPullParserHandler xmlpullparsinghandler = new XMLPullParserHandler();
+    private Context mContext;
+    private Activity activity;
+    MainActivity mainActivity;
+    ArrayList<Tour> tourlist;
+
     Adapter adapter;
+    RecyclerView recyclerView;
+    XMLPullParserHandler xmlPullParserHandler;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext= context;
+        if(context instanceof Activity){
+            activity =(Activity)context;
+            mainActivity = (MainActivity)getActivity();
+        }
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup view = (ViewGroup)inflater.inflate(R.layout.tourfragment,container,false);
-             adapter = new Adapter(new Adapter.onClickListener() {
+        ViewGroup view = (ViewGroup) inflater.inflate(R.layout.tourfragment, container, false);
+        recyclerView=view.findViewById(R.id.recyclerView);
+        xmlPullParserHandler = new XMLPullParserHandler();
+
+        adapter = new Adapter(new Adapter.OnTourClickListener() {
             @Override
-            public void onclick(Tour model) {
-                Toast.makeText(getActivity(),model.getName(),Toast.LENGTH_SHORT).show();
+            public void onTourClicked(Tour model) {
+
+//                Toast.makeText(MainActivity.this,model.getName(),Toast.LENGTH_SHORT).show();
+                int contentid = model.getContentid();
+                int contenttypeid = model.getContenttypeid();
+                mainActivity.sendinfodata(contentid,contenttypeid);
+                //메인 액티비티에 요청하기
+ //               IntentData intentData = new IntentData();
+//                intentData.setContentid(contentid);
+//                intentData.setContenttypeid(contenttypeid);
+//
+//                Intent intent=new Intent(getApplicationContext(),InformActivity.class);
+//                intent.putExtra("targetData",intentData);
+//                //인텐트 전달시 Parcelable 사용할지, 아니면 바로꺼내서 사용할지 정해야함
+//                startActivity(intent); // 상세화면 액티비티 전환.
             }
         });
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tourlist = xmlpullparsinghandler.parsing();
-                     getActivity().runOnUiThread(new Runnable() {
-                         @Override
-                         public void run() {
-                             adapter.setItems(tourlist);
-
-                         }
-                     });
-
-                    }
-                }).start();
-
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+        tourlist = new ArrayList<Tour>();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.setAdapter(adapter);
+            new Thread(new Runnable() {
+            @Override
+            public void run() {
+                tourlist = xmlPullParserHandler.parsing();
+                Log.d("jmw93", String.valueOf(tourlist.size()));
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.setItems(tourlist);
+
+                        recyclerView.setAdapter(adapter);
+
+                    }
+
+                });
+            }
+        }).start();
+
+
         return view;
     }
-    private static class Adapter extends RecyclerView.Adapter<Adapter.TourViewHolder> {
-        interface onClickListener {
-            void onclick(Tour model);
-        }
-
-        private onClickListener mListener;
-
-        private List<Tour> mItems = new ArrayList<>();
-
-        public Adapter() {}
-
-        public Adapter(onClickListener listener) {
-            mListener = listener;
-        }
-
-        public void setItems(List<Tour> items) {
-            this.mItems = items;
-            notifyDataSetChanged();
-        }
-
-        @NonNull
-        @Override
-        public TourViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.tour_item, parent, false);
-            final TourViewHolder viewHolder = new TourViewHolder(view);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mListener != null) {
-                        final Tour item = mItems.get(viewHolder.getAdapterPosition());
-                        mListener.onclick(item);
-                    }
-                }
-            });
-            return viewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull TourViewHolder holder, int position) {
-            Tour item = mItems.get(position);
-            holder.name.setText(item.getName());
-            holder.address.setText(item.getAddress());
-//            holder.image.setImageBitmap(item.getBitmap());
-    }
-
-        @Override
-        public int getItemCount() {
-            return mItems.size();
-        }
-
-        public static class TourViewHolder extends RecyclerView.ViewHolder {
-            TextView name;
-            TextView address;
-//            ImageView image;
-
-            public TourViewHolder(@NonNull View itemView) {
-                super(itemView);
-                name = itemView.findViewById(R.id.name);
-                address = itemView.findViewById(R.id.address);
-//                image = itemView.findViewById(R.id.image);
-            }
-        }
-    }
-
 }

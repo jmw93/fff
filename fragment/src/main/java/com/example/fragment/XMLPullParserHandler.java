@@ -7,24 +7,26 @@ import android.util.Log;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class XMLPullParserHandler {
-    private ArrayList<Tour> tourlist = new ArrayList<>();
-    private Tour tour;
+    public ArrayList<Tour> tourlist = new ArrayList<>();
+    public Tour tour;
+    public URL imgurl;
 
-
-    public ArrayList<Tour> getEmployees() {
+    public ArrayList<Tour> gettourlist() {
         return tourlist;
 
     }
 
     public ArrayList<Tour> parsing() {
-        String urlrequest ="http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?ServiceKey=RjzMYQORqJIq4l9YZkCCmV5mTIec%2BdJYC%2BUzK3c2Aogy4I2Y0tZnRI4292OO56Qqr%2FIMajYNHjo5M8Ayz4R05g%3D%3D&contentTypeId=12&areaCode=1&sigunguCode=&cat1=A01&cat2=A0101&cat3=&listYN=Y&MobileOS=ETC&MobileApp=TourAPI3.0_Guide&arrange=A&numOfRows=44";
+
+        String urlrequest ="http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?ServiceKey=RjzMYQORqJIq4l9YZkCCmV5mTIec%2BdJYC%2BUzK3c2Aogy4I2Y0tZnRI4292OO56Qqr%2FIMajYNHjo5M8Ayz4R05g%3D%3D&contentTypeId=12&areaCode=1&sigunguCode=&cat1=A01&cat2=A0101&cat3=&listYN=Y&MobileOS=ETC&MobileApp=TourAPI3.0_Guide&arrange=A&numOfRows=10";
         try {
             URL url = new URL(urlrequest);
             InputStream is = url.openStream();
@@ -41,33 +43,49 @@ public class XMLPullParserHandler {
                     case XmlPullParser.START_TAG:
                         String startTag = xpp.getName();
                         Log.d("minwoo",startTag);
-                        if(startTag.equals("item")){
-                        Tour tour = new Tour();
 
+                        if(startTag.equals("item")){
+                        tour = new Tour();
+                        break;
                         }
 
                         if(startTag.equals("addr1")){
                             xpp.next();
                             tour.setAddress(xpp.getText());
-
+                        break;
                         }
-                        if(startTag.equals("name")){
+                        if(startTag.equals("title")){
                             xpp.next();
                          tour.setName(xpp.getText());
+                        break;
                         }
-//                        if(startTag.equals("firstimage")){
-//                            xpp.next();
-//                            try {
-//                                HttpURLConnection conn = (HttpURLConnection) new URL(xpp.getText()).openConnection(); //이부분에서 비트맵객체로 바꿔서 객체에저장하기
-//                                conn.setDoInput(true);
-//                                conn.connect();
-//
-//                                InputStream stream = conn.getInputStream();
-//                                Bitmap bitmap = BitmapFactory.decodeStream(stream);
-//                            }catch(Exception e) {
-//                                Log.d("jmw93","이미지스레드오류났음");
-//                            }
-//                            }
+                        if(startTag.equals("contentid")){
+                            xpp.next();
+                            tour.setContentid(Integer.parseInt(xpp.getText().toString()));
+                            break;
+                        }
+                        if(startTag.equals("contenttypeid")){
+                            xpp.next();
+                            tour.setContenttypeid(Integer.parseInt(xpp.getText().toString()));
+                            break;
+                        }
+                        if(startTag.equals("firstimage")){
+                            xpp.next();
+                           try {
+                               imgurl = new URL(xpp.getText());
+                               URLConnection conn = imgurl.openConnection();
+                               conn.connect();
+                               BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
+                               Bitmap bitmap = BitmapFactory.decodeStream(bis);
+                               bis.close();
+                               tour.setBitmap(bitmap);
+                               Log.d("jmw93","이미지전환 끝");
+                           }catch (Exception e){
+                               Log.d("jmw93","이미지로딩실패");
+                           }
+                            break;
+                        }
+
 
 
                        break;
@@ -86,10 +104,10 @@ public class XMLPullParserHandler {
 
         } //try문의 끝
         catch (Exception e){
-            Log.e("MyTAG",e.toString());
+            Log.e("jmw93",e.toString()+"파싱중오류");
         }
 
-
+        Log.d("jmw93","파싱성공");
         return tourlist;
     }
 }

@@ -1,57 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <!-- 이미지뷰 추가하고싶으면추가하기-->
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Google계정 로그인"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+        <!-- 이미지뷰 추가하고싶으면추가하기-->
+                <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Google계정 로그인"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
-    </LinearLayout>
+        </LinearLayout>
 
-    <ImageView
-        android:src="@drawable/google"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_horizontal"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@drawable/google"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
+                <TextView
 
-            android:layout_width="0dp"
-            android:layout_weight="0.9"
-            android:layout_height="wrap_content"
-            android:text="아이디:"
-            android:textColor="#000000"
-            android:paddingLeft="30dp"
-            android:textSize="20dp"
-            />
-        <EditText
-            android:id="@+id/edit_Id"
-            android:inputType="textEmailAddress"
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:layout_height="wrap_content" />
+                    android:layout_width="0dp"
+                    android:layout_weight="0.9"
+                    android:layout_height="wrap_content"
+                    android:text="아이디:"
+                    android:textColor="#000000"
+                    android:paddingLeft="30dp"
+                    android:textSize="20dp"
+                    />
+                <EditText
+                    android:id="@+id/emailAddr"
+                    android:inputType="textEmailAddress"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content" />
 
-    </LinearLayout>
+        </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -67,7 +63,7 @@
             android:textSize="20dp"
             />
         <EditText
-            android:id="@+id/edit_Password"
+            android:id="@+id/emailPassword"
             android:layout_width="0dp"
             android:layout_weight="2"
             android:layout_height="wrap_content"
@@ -96,7 +92,7 @@
             android:textSize="20dp"
             />
         <EditText
-            android:id="@+id/edit_recipient"
+            android:id="@+id/recipient"
             android:inputType="textEmailAddress"
             android:layout_width="0dp"
             android:layout_weight="2"
@@ -111,13 +107,4 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center_horizontal"/>
-    <Button
-        android:id="@+id/btn_stop"
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="메일중지"/>
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

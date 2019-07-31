@@ -107,7 +107,7 @@ public class GMailSender extends javax.mail.Authenticator {
     protected PasswordAuthentication getPasswordAuthentication() {
 
         //해당 메서드에서 사용자의 계정(id & password)을 받아 인증받으며 인증 실패시 기본값으로 반환됨.
-        Log.d("minwoo","인증실패메소드");
+        Log.d("minwoo","인증중....");
         return new PasswordAuthentication(user, password);
 
     }
